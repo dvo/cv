@@ -13,6 +13,15 @@
   <h1>Loading CV...</h1>
 </div>
 
+<div id="footer">SAVE CV AS 
+  <select>
+    <option>JSON</option>
+    <!--<option>PDF</option>
+    <option>RTF</option>-->
+  </select>
+  <span class="save-icon" onclick="downloadJson()">💾</span>
+</div>
+
 <script>
   let cvData = {};
   let hasUnsavedChanges = false;
@@ -68,7 +77,6 @@
   }
 
   function capitalize(str) {
-    // Insert spaces between words based on case transitions, then capitalize each word
     const spaced = str.replace(/([a-z])([A-Z])/g, '$1 $2');
     return spaced.charAt(0).toUpperCase() + spaced.slice(1);
   }
@@ -130,6 +138,24 @@
         document.getElementById('saveChangesBtn').style.display = "none";
       })
       .catch(err => alert('Failed to copy URL to clipboard: ' + err));
+  }
+
+  function downloadJson() {
+    if (!cvData || Object.keys(cvData).length === 0) {
+      alert('No CV data available to save.');
+      return;
+    }
+
+    const dataStr = JSON.stringify(cvData, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'cv.json';
+    link.click();
+
+    URL.revokeObjectURL(url);
   }
 
   function editPhotoUrl(path, currentUrl) {

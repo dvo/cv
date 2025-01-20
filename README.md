@@ -8,3 +8,8 @@ A Free CV Builder
 You will then see your CV. You can then copy the link and send it to an employer. 
 
 NOTE: No data is actually stored. Instead, the CV data is appended to the link itself. 
+
+TO DO
+
+Add more save options (RTF, PDF, DOC and more)
+Add templates/themes for user to choose

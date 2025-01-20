@@ -4,6 +4,7 @@ html,body,div,span,applet,object,iframe,a,abbr,acronym,address,big,cite,code,del
 body {
       font-family: Arial, sans-serif;
       margin: 20px;
+    padding-bottom: 80px;
       line-height: 1.6;
       text-align: center;
     }
@@ -94,6 +95,23 @@ border-radius: 0;
       background-color: #0056b3;
     }
 
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px 0;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 1000;
+margin: 0;
+border-radius: 0;
+}
+
+
 
 
 
@@ -125,8 +143,7 @@ border-radius: 0;
     }*/
 
 
-input, textarea {
-    width: 100%;
+input, textarea, select {
   font-family: Arial, sans-serif; /* Use a clean, readable font */
   font-size: 16px; /* Comfortable text size */
   padding: 10px; /* Add padding for a spacious feel */
@@ -140,7 +157,26 @@ input, textarea {
   transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
 }
 
-input:focus, textarea:focus {
+input, textarea {
+        width: 100%;
+}
+
+select {
+    margin:0 10px;
+}
+
+.save-icon {
+          /* This is for the footer - perhaps change the name so that it doesn't get confused with the top save button */
+    font-size: 30px;
+    vertical-align: middle;
+    color: white;
+}
+
+  .save-btn:hover {
+    background-color: #0056b3;
+  }
+
+input:focus, textarea:focus, select:focus  {
   border-color: #007BFF; /* Blue border to indicate focus */
   box-shadow: 0 0 6px rgba(0, 123, 255, 0.5); /* Glowing effect */
   background-color: #fff; /* Slightly brighter background on focus */
