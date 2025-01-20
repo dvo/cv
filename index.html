@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Viewer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container" id="cv-container">
+  <button id="saveChangesBtn" class="save-btn" style="display: none;">SAVE CHANGES</button>
+  <h1>Loading CV...</h1>
+</div>
+
+<script>
+  let cvData = {};
+  let hasUnsavedChanges = false;
+
+  function renderField(key, value, path) {
+    if (key === "photo" && typeof value === "string") {
+      return `
+        <div>
+          <img src="${value}" alt="Profile Picture" class="profile-pic" onclick="editPhotoUrl('${path}', '${value}')">
+          <input type="text" 
+                 value="${value}" 
+                 style="display: none; width: 100%;" 
+                 onblur="savePhotoUrl('${path}', this)"
+                 class="photo-input">
+        </div>
+      `;
+    }
+
+    if (Array.isArray(value)) {
+      return `
+        <h2>${capitalize(key)}</h2>
+        <ul>
+          ${value
+            .map((item, index) => `
+              <li>${typeof item === 'object'
+                ? renderJson(item, `${path}[${index}]`)
+                : `<span contenteditable="true" oninput="markUnsavedChanges('${path}[${index}]', this)">${item}</span>`
+              }</li>`)
+            .join('')}
+        </ul>
+      `;
+    }
+
+    if (typeof value === "object" && value !== null) {
+      return `
+        <details open>
+          <summary>${capitalize(key)}</summary>
+          <div>${renderJson(value, path)}</div>
+        </details>
+      `;
+    }
+
+    return `
+      <p><strong>${capitalize(key)}:</strong> 
+      <span contenteditable="true" oninput="markUnsavedChanges('${path}', this)">${value}</span></p>
+    `;
+  }
+
+  function renderJson(json, path = "") {
+    return Object.entries(json)
+      .map(([key, value]) => renderField(key, value, path ? `${path}.${key}` : key))
+      .join('');
+  }
+
+  function capitalize(str) {
+    // Insert spaces between words based on case transitions, then capitalize each word
+    const spaced = str.replace(/([a-z])([A-Z])/g, '$1 $2');
+    return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+  }
+
+  function renderCV() {
+    const params = new URLSearchParams(window.location.search);
+    const cvDataParam = params.get('cvData');
+
+    if (cvDataParam) {
+      try {
+        cvData = JSON.parse(decodeURIComponent(cvDataParam));
+        const container = document.getElementById('cv-container');
+        container.innerHTML = `
+          <button id="saveChangesBtn" class="save-btn" style="display: none;" onclick="saveChanges()">Save Changes</button>
+          ${renderJson(cvData)}
+        `;
+      } catch (e) {
+        alert('Failed to parse CV data. Please check your JSON.');
+      }
+    } else {
+      document.getElementById('cv-container').innerHTML = '<h1>No CV Data Provided</h1>';
+    }
+  }
+
+  function markUnsavedChanges(path, element) {
+    const newValue = element.textContent.trim();
+    updateNestedObject(cvData, path, newValue);
+    showSaveButton();
+    hasUnsavedChanges = true;
+  }
+
+  function updateNestedObject(obj, path, value) {
+    const keys = path.split(/\.|\[|\]/).filter(k => k);
+    keys.reduce((acc, key, index) => {
+      if (index === keys.length - 1) {
+        acc[key] = value;
+      } else {
+        if (!acc[key]) acc[key] = {};
+        return acc[key];
+      }
+    }, obj);
+  }
+
+  function showSaveButton() {
+    const saveBtn = document.getElementById('saveChangesBtn');
+    saveBtn.style.display = "block";
+  }
+
+  function saveChanges() {
+    if (!hasUnsavedChanges) return;
+
+    const newQueryString = `?cvData=${encodeURIComponent(JSON.stringify(cvData))}`;
+    const newUrl = window.location.origin + window.location.pathname + newQueryString;
+
+    navigator.clipboard.writeText(newUrl)
+      .then(() => {
+        alert('Changes saved and URL copied to clipboard!');
+        hasUnsavedChanges = false;
+        document.getElementById('saveChangesBtn').style.display = "none";
+      })
+      .catch(err => alert('Failed to copy URL to clipboard: ' + err));
+  }
+
+  function editPhotoUrl(path, currentUrl) {
+    const photoInput = document.querySelector(`.photo-input`);
+    photoInput.style.display = "block";
+    photoInput.focus();
+  }
+
+  function savePhotoUrl(path, input) {
+    const newValue = input.value.trim();
+    updateNestedObject(cvData, path, newValue);
+    const img = input.previousElementSibling;
+    img.src = newValue;
+    input.style.display = "none";
+    showSaveButton();
+    hasUnsavedChanges = true;
+  }
+
+  renderCV();
+</script>
+
+</body>
+</html>
