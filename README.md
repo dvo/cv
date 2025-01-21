@@ -13,4 +13,3 @@ TO DO
 
 Add more save options (RTF, PDF, DOC and more)
 Add templates/themes for user to choose
-Merge setup.html and index.html into one file so that if the query string is empty it will display the form

@@ -9,11 +9,12 @@
 <body>
 
 <div class="container" id="cv-container">
-  <button id="saveChangesBtn" class="save-btn" style="display: none;">SAVE CHANGES</button>
+  <button id="saveChangesBtn" class="save-btn" style="display: none;" onclick="saveChanges()">SAVE CHANGES</button>
   <h1>Loading CV...</h1>
 </div>
 
-<div id="footer">SAVE CV AS 
+<div id="footer" style="display: none;">
+  SAVE CV AS
   <select>
     <option>JSON</option>
     <!--<option>PDF</option>
@@ -87,18 +88,74 @@
 
     if (cvDataParam) {
       try {
-        cvData = JSON.parse(decodeURIComponent(cvDataParam));
+        const decodedJson = decodeURIComponent(cvDataParam);
+        cvData = JSON.parse(decodedJson);
+
         const container = document.getElementById('cv-container');
         container.innerHTML = `
           <button id="saveChangesBtn" class="save-btn" style="display: none;" onclick="saveChanges()">Save Changes</button>
           ${renderJson(cvData)}
         `;
-      } catch (e) {
-        alert('Failed to parse CV data. Please check your JSON.');
+
+        // Show footer if query string is present
+        document.getElementById('footer').style.display = "block";
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        alert('Failed to parse CV data. Please ensure your JSON is valid and properly formatted.');
       }
     } else {
-      document.getElementById('cv-container').innerHTML = '<h1>No CV Data Provided</h1><p><a href="setup.html">CLICK HERE TO CREATE A CV</a></p>';
+      renderSetupPage(); // Show setup page if no query string
     }
+  }
+
+  function renderSetupPage() {
+    document.getElementById('cv-container').innerHTML = `
+      <h1>Setup Your CV</h1>
+      <p><strong>STEP 1:</strong> Go to ChatGPT (or another AI model) and ask it to convert your CV to JSON format. Once done, copy the JSON and come back here.</p>
+      <p><strong>STEP 2:</strong> Paste your JSON data below, add your profile photo (optional), and click "Render CV" to generate your CV.</p>
+      
+      <!-- Profile photo input -->
+      <label for="photoInput">Profile Photo URL (optional):</label>
+      <input type="url" id="photoInput" placeholder="Enter photo URL (or leave blank)" />
+
+      <textarea id="jsonInput" rows="10" placeholder="Paste your JSON here"></textarea>
+      <button id="renderBtn">Render CV</button>
+    `;
+    
+    // Add event listener for rendering the CV
+    document.getElementById('renderBtn').addEventListener('click', () => {
+      const jsonInput = document.getElementById('jsonInput').value;
+
+      try {
+        const data = JSON.parse(jsonInput);
+
+        const photoInput = document.getElementById('photoInput').value.trim();
+        if (photoInput) data.photo = photoInput;
+
+        // Remove empty fields
+        removeEmptyFields(data);
+
+        // Ensure 'photo' is the first field
+        const { photo, ...rest } = data;
+        const orderedData = { photo, ...rest };
+
+        const encodedJson = encodeURIComponent(JSON.stringify(orderedData));
+        const url = `${window.location.pathname}?cvData=${encodedJson}`;
+        window.location.href = url;
+      } catch (error) {
+        alert('Invalid JSON. Please ensure it is properly formatted and try again.');
+      }
+    });
+  }
+
+  function removeEmptyFields(obj) {
+    Object.keys(obj).forEach(key => {
+      if (obj[key] === "" || obj[key] === null || obj[key] === undefined) {
+        delete obj[key];
+      } else if (typeof obj[key] === "object") {
+        removeEmptyFields(obj[key]);
+      }
+    });
   }
 
   function markUnsavedChanges(path, element) {
