@@ -1,7 +1,7 @@
 # cv
 A Free CV Builder
 
-- Go to https://dvo.github.io/cv/setup.html
+- Go to https://dvo.github.io/cv/
 - Ask AI to convert your CV to JSON format. Copy the JSON code and return. 
 - Paste JSON into text box and submit. 
 
