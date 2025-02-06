@@ -113,17 +113,15 @@
 
   function renderSetupPage() {
     document.getElementById('cv-container').innerHTML = `
-      <h1>Setup Your CV</h1>
-      <p><strong>STEP 1:</strong> Go to ChatGPT (or another AI model) and ask it to convert your CV to JSON format. Once done, copy the JSON and come back here.</p>
-      <p><strong>STEP 2:</strong> Paste your JSON data below, add your profile photo (optional), and click "Render CV" to generate your CV.</p>
+      <h1>Create Your CV</h1>
+      <p>Go to ChatGPT (or equivalent) and ask it to convert your CV to JSON format. If you don't have a CV, ask it to create one for you. All CV data can be edited directly via the front-end at any time. Once done, copy and paste your JSON data below.</p>
       
       <!-- Profile photo input -->
       <label for="photoInput">Profile Photo URL (optional):</label>
       <input type="url" id="photoInput" placeholder="Enter photo URL (or leave blank)" />
 
       <textarea id="jsonInput" rows="10" placeholder="Paste your JSON here"></textarea>
-      <p>NOTE: You can edit your CV from the front-end. Simply click on the text and press save!</p>
-      <button id="renderBtn">Render CV</button>
+      <button id="renderBtn">CREATE CV</button>
     `;
     
     // Add event listener for rendering the CV
