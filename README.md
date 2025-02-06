@@ -11,5 +11,4 @@ NOTE: No data is actually stored. Instead, the CV data is appended to the link i
 
 TO DO
 
-Add more save options (RTF, PDF, DOC and more)
 Add templates/themes for user to choose
